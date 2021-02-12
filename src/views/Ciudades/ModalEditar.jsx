@@ -37,7 +37,7 @@ const ModalEditar = ({ isOpen, toggle3, ciudad, setCiudad, ciudadSeleccionada, s
           console.log(consola)
         }
       });
-      setCiudad(dataNueva);
+      setCiudad(dataNueva)
       console.log(dataNueva.id);
       toggle3()
     });

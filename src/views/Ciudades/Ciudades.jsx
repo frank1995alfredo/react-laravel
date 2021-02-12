@@ -10,6 +10,7 @@ import {
   Col,
   Table,
   Button,
+  Badge,
 } from "reactstrap";
 import ModalInsertar from "./ModalInsertar.jsx";
 import ModalEliminar from "./ModalEliminar";
@@ -85,7 +86,7 @@ const ListCiudades = () => {
                       <th scope="row">{id + 1}</th>
                       <td>{item.provincia}</td>
                       <td>{item.ciudad}</td>
-                      <td>{item.estado ? "Activo" : ""}</td>
+                      <td>{item.estado ? <Badge href="#" color="success">Activo</Badge> : ""}</td>
                       <td className="text-center">
                         <Button
                           className="tim-icons icon-refresh-01"
