@@ -12,14 +12,14 @@ import {
 } from "reactstrap";
 import axios from "axios";
 import url from "../../config";
+
 const ModalEliminar = ({
   isOpen,
   eliminar,
-  ciudades,
-  setCiudades,
+  discapacidades,
+  setDiscapacidades,
   dataEliminar,
 }) => {
-  
   //notificacion en caso de que se guarde
   const notificationAlert = useRef(null);
   const Notify = (place) => {
@@ -29,7 +29,7 @@ const ModalEliminar = ({
       message: (
         <div>
           <div>
-            Ciudad <strong>{dataEliminar.descripcion}</strong> eliminada
+            Discapacidad <strong>{dataEliminar.descripcion}</strong> eliminada
             satisfactoriamente
           </div>
         </div>
@@ -44,9 +44,13 @@ const ModalEliminar = ({
 
   const peticionDelete = async () => {
     await axios
-      .delete(`${url}/ciudades/` + dataEliminar.id)
+      .delete(`${url}/discapacidades/` + dataEliminar.id)
       .then((response) => {
-        setCiudades(ciudades.filter((ciudad) => ciudad.id !== dataEliminar.id));
+        setDiscapacidades(
+          discapacidades.filter(
+            (discapacidad) => discapacidad.id !== dataEliminar.id
+          )
+        );
         Notify("tr");
         eliminar();
       });
@@ -67,7 +71,7 @@ const ModalEliminar = ({
               <FormGroup row>
                 <Label for="descripcion" sm={10}>
                   Esta seguro que desea eliminar{" "}
-                  <strong> {dataEliminar.ciudad}</strong>
+                  <strong> {dataEliminar.descripcion}</strong>
                 </Label>
               </FormGroup>
               <FormGroup>

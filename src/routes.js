@@ -24,6 +24,8 @@ import TableList from "views/TableList.js";
 import Typography from "views/Typography.js";
 import UserProfile from "views/UserProfile.js";
 import ListCiudades from "views/Ciudades/Ciudades.jsx";
+import LisDiscapacidades from "views/Discapacidades/Discapacidades.jsx";
+import LisProvincias from "views/Provincias/Provincias.jsx";
 
 
 var routes = [
@@ -36,11 +38,27 @@ var routes = [
     layout: "/admin"
   },
   {
-    path: "/provincias",
-    name: "Provincias",
+    path: "/ciudades",
+    name: "Ciudades",
     rtlName: "الرموز",
     icon: "tim-icons icon-world",
     component: ListCiudades,
+    layout: "/admin"
+  },
+  {
+    path: "/discapacidades",
+    name: "Discapacidades",
+    rtlName: "الرموز",
+    icon: "tim-icons icon-heart-2",
+    component: LisDiscapacidades,
+    layout: "/admin"
+  },
+  {
+    path: "/provincias",
+    name: "Provincias",
+    rtlName: "الرموز",
+    icon: "tim-icons  icon-world",
+    component: LisProvincias,
     layout: "/admin"
   },
   {

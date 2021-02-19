@@ -38,9 +38,12 @@ class FixedPlugin extends Component {
     switch (mode) {
       case "light":
         document.body.classList.add("white-content");
+
+        console.log("blanco");
         break;
       default:
         document.body.classList.remove("white-content");
+         console.log("negro");
         break;
     }
   };

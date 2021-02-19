@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import NotificationAlert from "react-notification-alert";
+
 import {
   Button,
   Modal,
@@ -12,15 +13,15 @@ import {
 } from "reactstrap";
 import axios from "axios";
 import url from "../../config";
+
 const ModalEliminar = ({
   isOpen,
   eliminar,
-  ciudades,
-  setCiudades,
+  provincias,
+  setProvincias,
   dataEliminar,
 }) => {
-  
-  //notificacion en caso de que se guarde
+  //notificacion en casi de que se guarde
   const notificationAlert = useRef(null);
   const Notify = (place) => {
     var options = {};
@@ -29,8 +30,8 @@ const ModalEliminar = ({
       message: (
         <div>
           <div>
-            Ciudad <strong>{dataEliminar.descripcion}</strong> eliminada
-            satisfactoriamente
+            Provincia <strong>{dataEliminar.descripcion}</strong> eliminada
+            satisfacforiamente
           </div>
         </div>
       ),
@@ -44,9 +45,11 @@ const ModalEliminar = ({
 
   const peticionDelete = async () => {
     await axios
-      .delete(`${url}/ciudades/` + dataEliminar.id)
+      .delete(`${url}/provincias/` + dataEliminar.id)
       .then((response) => {
-        setCiudades(ciudades.filter((ciudad) => ciudad.id !== dataEliminar.id));
+        setProvincias(
+          provincias.filter((provincia) => provincia.id !== dataEliminar.id)
+        );
         Notify("tr");
         eliminar();
       });
@@ -61,13 +64,13 @@ const ModalEliminar = ({
         <Card>
           <Modal isOpen={isOpen} toggle={eliminar}>
             <ModalHeader toggle={eliminar} tag="h4">
-              <strong>Eliminar Ciudad</strong>
+              <strong>Eliminar Provincias</strong>
             </ModalHeader>
             <ModalBody>
               <FormGroup row>
                 <Label for="descripcion" sm={10}>
                   Esta seguro que desea eliminar{" "}
-                  <strong> {dataEliminar.ciudad}</strong>
+                  <strong> {dataEliminar.descripcion}</strong>
                 </Label>
               </FormGroup>
               <FormGroup>

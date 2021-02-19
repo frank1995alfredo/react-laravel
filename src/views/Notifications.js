@@ -61,7 +61,7 @@ class Notifications extends React.Component {
       message: (
         <div>
           <div>
-            Welcome to <b>Black Dashboard React</b> - a beautiful freebie for
+            Welcome to <b>Black Dashboard React :v</b> - a beautiful freebie for
             every web developer.
           </div>
         </div>
@@ -71,6 +71,7 @@ class Notifications extends React.Component {
       autoDismiss: 7
     };
     this.refs.notificationAlert.notificationAlert(options);
+   
   };
   render() {
     return (
