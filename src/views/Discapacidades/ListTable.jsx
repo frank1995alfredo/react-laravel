@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { CardBody, Table, Button } from "reactstrap";
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
+import { Default } from 'react-spinners-css';
 import ModalEditar from "./ModalEditar";
 import ModalEliminar from "./ModalEliminar";
 import ModalInsertar from "./ModalInsertar";
 import "jspdf-autotable"; //libreria para los pdfs
+import { func } from "prop-types";
 
-const ListTable = ({insertar, modalInsertar, discapacidades, setDiscapacidades}) => {
+const ListTable = ({insertar, modalInsertar, discapacidades, setDiscapacidades, term}) => {
   const [modalEditar, setModalEditar] = useState(false);
   const [modalEliminar, setModalEliminar] = useState(false);
 
@@ -37,6 +39,13 @@ const ListTable = ({insertar, modalInsertar, discapacidades, setDiscapacidades})
     }
   };
 
+  //funcion de busqueda
+  function searchingTerm(term) {
+    return function(x) {
+      return x.descripcion.toLowerCase().includes(term.toLowerCase()) || !term
+    }
+  }
+   
   return (
     <CardBody>
       <Table id="excel" className="tablesorter" responsive>
@@ -49,27 +58,36 @@ const ListTable = ({insertar, modalInsertar, discapacidades, setDiscapacidades})
           </tr>
         </thead>
         <tbody>
-          {discapacidades.map((dis, index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
-              <td>{dis.descripcion}</td>
-              <td>{dis.estado ? "Activo" : ""}</td>
-              <td className="text-center">
-                <Button
-                  className="tim-icons icon-refresh-01"
-                  color="success"
-                  onClick={() => seleccionarOpcion(dis, "Editar")}
-                  size="sm"
-                ></Button>{" "}
-                <Button
-                  className="tim-icons icon-trash-simple"
-                  color="danger"
-                  onClick={() => seleccionarOpcion(dis, "Eliminar")}
-                  size="sm"
-                ></Button>
-              </td>
-            </tr>
-          ))}
+          {
+            discapacidades.length > 0 ? (
+              discapacidades.filter(searchingTerm(term)).map((dis, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{dis.descripcion}</td>
+                  <td>{dis.estado ? "Activo" : ""}</td>
+                  <td className="text-center">
+                    <Button
+                      className="tim-icons icon-refresh-01"
+                      color="success"
+                      onClick={() => seleccionarOpcion(dis, "Editar")}
+                      size="sm"
+                    ></Button>{" "}
+                    <Button
+                      className="tim-icons icon-trash-simple"
+                      color="danger"
+                      onClick={() => seleccionarOpcion(dis, "Eliminar")}
+                      size="sm"
+                    ></Button>
+                  </td>
+                </tr>
+              ))
+            ) :  (
+              <tr>
+                <td colSpan="4" className="text-center">
+                <Default />
+                </td>
+              </tr>
+            )}
         </tbody>
       </Table>
       <Pagination responsive aria-label="Page navigation example">

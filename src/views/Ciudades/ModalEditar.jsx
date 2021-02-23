@@ -11,19 +11,32 @@ import {
   Input,
   Card,
   Form,
-  CustomInput,
 } from "reactstrap";
 import axios from "axios";
 import url from "../../config";
 
-const ModalEditar = ({
-  isOpen,
-  editar,
-  setDiscapacidades,
-  discapacidades,
-  disc,
-}) => {
-  const [discapacidad, setDiscapacidad] = useState(disc);
+const ModalEditar = ({ isOpen, editar, ciudades, setCiudades, ciu }) => {
+  const [ciudad, setCiudad] = useState(ciu);
+  const [provincia, setProvincia] = useState([]);
+
+  useEffect(() => {
+    setCiudad(ciu);
+    console.log(ciudad);
+  }, [ciu]);
+
+  useEffect(() => {
+    async function fetchMyAPI() {
+      try {
+        let response = await fetch(`${url}/provincias`);
+        response = await response.json();
+        setProvincia(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchMyAPI();
+  }, []);
 
   //notificacion en caso de que se guarde
   const notificationAlert = useRef(null);
@@ -40,11 +53,12 @@ const ModalEditar = ({
       icon: "tim-icons icon-bell-55",
       autoDismiss: 7,
     };
+
     notificationAlert.current.notificationAlert(options);
   };
 
-  //notificacion en caso de que falten datos
-  const Notify2 = (place) => {
+   //notificacion en caso de que falten datos
+   const Notify2 = (place) => {
     var options = {};
     options = {
       place: place,
@@ -61,36 +75,38 @@ const ModalEditar = ({
   };
 
   const actualizar = async (id, data) => {
-    try {
-      await axios
-        .put(`${url}/discapacidades/` + id, data)
-        .then((response) => {});
-      setDiscapacidades(
-        discapacidades.map((discapacidad) =>
-          discapacidad.id === id ? data : discapacidad
-        )
-      );
-      Notify("tr");
-    } catch (error) {
-      Notify2("tr");
-      console.log(error);
-    }
+   try {
+    await axios.put(`${url}/ciudades/` + id, data).then((response) => {
+        setCiudades(
+          ciudades.map((ciudad) =>
+            ciudad.id === id ? response.data.data[0] : ciudad
+          )
+        );
+        Notify("tr");
+      });
+   } catch (error) {
+       Notify2("tr");
+       console.log(error)
+   }
+   
+    /* setCiudades(
+      ciudades.map((ciudad) =>
+        ciudad.id === id ? data : ciudad
+      )
+    );*/
   };
-
-  useEffect(() => {
-    setDiscapacidad(disc);
-  }, [disc]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setDiscapacidad({ ...discapacidad, [name]: value });
+    setCiudad({ ...ciudad, [name]: value });
+    console.log(ciudad);
   };
 
   const peticionActualizar = (event) => {
-    event.preventDefault();
-
-    actualizar(discapacidad.id, discapacidad);
-    editar();
+        
+        event.preventDefault();
+        actualizar(ciudad.id, ciudad);
+        editar();
   };
 
   return (
@@ -102,22 +118,44 @@ const ModalEditar = ({
         <Card>
           <Modal isOpen={isOpen} toggle={editar}>
             <ModalHeader toggle={editar} tag="h4">
-              <strong>Actualizar Discapacidad</strong>
+              <strong>Actualizar Ciudad</strong>
             </ModalHeader>
             <ModalBody>
               <Form onSubmit={peticionActualizar}>
                 <FormGroup row>
-                  <Label for="descripcion" sm={3}>
-                    Discapacidad
+                  <Label for="ciudad" sm={3}>
+                    Ciudad
                   </Label>
                   <Col sm={8}>
                     <Input
                       type="text"
                       name="descripcion"
-                      value={discapacidad.descripcion}
+                      value={ciudad.descripcion}
                       id="descripcion"
                       onChange={handleInputChange}
                     />
+                  </Col>
+                </FormGroup>
+                <FormGroup row>
+                  <Label for="descripcion" sm={3}>
+                    Provincia
+                  </Label>
+                  <Col sm={8}>
+                    <Input
+                      type="select"
+                      onChange={handleInputChange}
+                      name="provincia_id"
+                      id="exampleSelect"
+                    >
+                      <option value={ciudad.provincia_id}>
+                        {ciudad.provincia}
+                      </option>
+                      {provincia.map((prov) => (
+                        <option value={prov.id} key={prov.id}>
+                          {prov.descripcion}
+                        </option>
+                      ))}
+                    </Input>
                   </Col>
                 </FormGroup>
                 <FormGroup>

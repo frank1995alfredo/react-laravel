@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import NotificationAlert from "react-notification-alert";
 import {
   Button,
@@ -15,15 +15,23 @@ import {
 } from "reactstrap";
 import axios from "axios";
 import url from "../../config";
-import { bool } from "prop-types";
 
-const ModalInsertar = ({ isOpen, insertar, addDiscapacidad }) => {
-  const initialFormState = { id: null, descripcion: "", estado: bool }; //se inicializan los inputs
-  const [disc, setDisc] = useState(initialFormState);
+const ModalInsertar = ({ isOpen, insertar, addCiudad }) => {
+  const initialFormState = {
+    id: null,
+    provincia_id: 0,
+    descripcion: "",
+    ciudad: "",
+    provincia: "",
+  }; //se inicializan los inputs
+
+  const [ciu, setCiu] = useState(initialFormState);
+  const [provincias, setProvincias] = useState([]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.currentTarget;
-    setDisc({ ...disc, [name]: value });
+    setCiu({ ...ciu, [name]: value });
+    console.log(ciu);
   };
 
   //notificacion en caso de que se guarde
@@ -35,7 +43,7 @@ const ModalInsertar = ({ isOpen, insertar, addDiscapacidad }) => {
       message: (
         <div>
           <div>
-            Discapacidad <strong>{disc.descripcion}</strong> agregada
+            Ciudad <strong>{ciu.descripcion}</strong> agregada
             satisfactoriamente
           </div>
         </div>
@@ -47,6 +55,7 @@ const ModalInsertar = ({ isOpen, insertar, addDiscapacidad }) => {
     notificationAlert.current.notificationAlert(options);
   };
 
+
   //notificacion en caso de que falten datos
   const Notify2 = (place) => {
     var options = {};
@@ -54,7 +63,9 @@ const ModalInsertar = ({ isOpen, insertar, addDiscapacidad }) => {
       place: place,
       message: (
         <div>
-          <div>Por favor ingrese una descripcion.</div>
+          <div>
+             Por favor llene todos los datos.
+          </div>
         </div>
       ),
       type: "info",
@@ -64,17 +75,32 @@ const ModalInsertar = ({ isOpen, insertar, addDiscapacidad }) => {
     notificationAlert.current.notificationAlert(options);
   };
 
+  useEffect(() => {
+    async function fetchMyAPI() {
+      try {
+        let response = await fetch(`${url}/provincias`);
+        response = await response.json();
+        setProvincias(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchMyAPI();
+  }, []);
+
   const peticionPost = async (event) => {
     event.preventDefault();
     try {
-      await axios.post(`${url}/discapacidades`, disc).then((response) => {
-        addDiscapacidad(response.data.data);
-        setDisc(initialFormState);
+      await axios.post(`${url}/ciudades`, ciu).then((response) => {
+        addCiudad(response.data.data[0]); //[0] hace que pueda acceder al elemento json
+        console.log(response.data.data[0]);
+        setCiu(initialFormState);
         Notify("tr");
         insertar();
       });
     } catch (error) {
-      Notify2("tr");
+      Notify2("tr")
       console.log(error);
     }
   };
@@ -99,24 +125,44 @@ const ModalInsertar = ({ isOpen, insertar, addDiscapacidad }) => {
               <ModalHeader toggle={insertar} tag="h4">
                 <label>
                   {" "}
-                  <strong>Nueva Discapacidad</strong>
+                  <strong>Nueva Ciudad</strong>
                 </label>
               </ModalHeader>
               <ModalBody>
                 <Form onSubmit={peticionPost}>
                   <FormGroup row>
                     <Label for="descripcion" sm={3}>
-                      Discapacidad
+                      Ciudad
                     </Label>
                     <Col sm={8}>
                       <Input
                         type="text"
                         name="descripcion"
-                        value={disc.descripcion}
-                        id="descripcion"
-                        placeholder="Descripcion"
+                        value={ciu.descripcion}
+                        id="Descripcion"
+                        placeholder="Ciudad"
                         onChange={handleInputChange}
                       />
+                    </Col>
+                  </FormGroup>
+                  <FormGroup row>
+                    <Label for="descripcion" sm={3}>
+                      Provincia
+                    </Label>
+                    <Col sm={8}>
+                      <Input
+                        type="select"
+                        onChange={handleInputChange}
+                        name="provincia_id"
+                        id="exampleSelect"
+                      >
+                        <option value="0">Seleccione una provincia</option>
+                        {provincias.map((prov) => (
+                          <option value={prov.id} key={prov.id}>
+                            {prov.descripcion}
+                          </option>
+                        ))}
+                      </Input>
                     </Col>
                   </FormGroup>
                   <FormGroup>
@@ -141,4 +187,5 @@ const ModalInsertar = ({ isOpen, insertar, addDiscapacidad }) => {
     </div>
   );
 };
+
 export default ModalInsertar;

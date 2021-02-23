@@ -1,52 +1,80 @@
-
-import React, { useState, useEffect }  from "react";
-import {
-    CardBody,
-    Table,
-    Button,
-  } from "reactstrap";
-  import ModalEliminar from "./ModalEliminar";
-
-const ListTable = ({ciudades, setCiudades}) => {
+import React, { useState, useEffect } from "react";
+import { CardBody, Table, Button } from "reactstrap";
+import { Default } from "react-spinners-css";
+import ModalEliminar from "./ModalEliminar";
+import ModalInsertar from "./ModalInsertar";
+import ModalEditar from "./ModalEditar";
 
 
-    const [modalEliminar, setModalEliminar] = useState(false);
+const ListTable = ({
+  insertar,
+  modalInsertar,
+  ciudades,
+  setCiudades,
+  term,
+}) => {
+  const [modalEditar, setModalEditar] = useState(false);
+  const [modalEliminar, setModalEliminar] = useState(false);
 
-    const eliminar = () => setModalEliminar(!modalEliminar);
+  const editar = () => setModalEditar(!modalEditar);
+  const eliminar = () => setModalEliminar(!modalEliminar);
 
-    const [dataEliminar, setDataEliminar] = useState([]); //le paso los datos de la api
-    const initialFormState = { id: null, descripcion: "", estado: true }; //se inicializan los inputs
-    const [ciu, setCiu] = useState(initialFormState);
+  const [dataEliminar, setDataEliminar] = useState([]); //le paso los datos de la api
+  const initialFormState = {
+    id: null,
+    provincia_id: 0,
+    descripcion: "",
+    ciudad: "",
+    estado: true,
+  }; //se inicializan los inputs
+  const [ciu, setCiu] = useState(initialFormState);
 
-    const seleccionarOpcion = (discapa, caso) => {
-        if (caso === "Editar") {
-          setCiu({
-            id: discapa.id,
-            descripcion: discapa.descripcion,
-            estado: discapa.estado,
-          });
-         // setModalEditar(true);
-        } else {
-          setDataEliminar(discapa);
-          setModalEliminar(true);
-          console.log(dataEliminar);
-        }
-      };
+  const addCiudad = (ciu) => {
+    ciu.estado = true;
+    setCiudades([...ciudades, ciu]);
+  };
 
-    return(
-        <CardBody>
-        <Table id="excel" className="tablesorter" responsive>
-          <thead className="text-primary">
-            <tr>
-              <th>#</th>
-              <th>Ciudad</th>
-              <th>Provincia</th>
-              <th>Estado</th>
-              <th className="text-center">Opciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ciudades.map((ciu, index) => (
+  const seleccionarOpcion = (ciudad, caso) => {
+    if (caso === "Editar") {
+      setCiu({
+        id: ciudad.id,
+        provincia_id: ciudad.provincia_id,
+        descripcion: ciudad.ciudad,
+        provincia: ciudad.provincia,
+      });
+      setModalEditar(true);
+    } else {
+      setDataEliminar(ciudad);
+      setModalEliminar(true);
+    }
+  };
+
+  //funcion de busqueda
+  function searchingTerm(term) {
+    return function (x) {
+      return (
+        x.ciudad.toLowerCase().includes(term.toLowerCase()) ||
+        x.provincia.toLowerCase().includes(term.toLowerCase()) ||
+        !term
+      );
+    };
+  }
+
+  return (
+    <CardBody>
+      <Table id="excel" className="tablesorter" responsive>
+        <thead className="text-primary">
+          <tr>
+            <th>#</th>
+            <th>Ciudad</th>
+            <th>Provincia</th>
+            <th>Estado</th>
+            <th className="text-center">Opciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {ciudades.length > 0 ? (
+            ciudades.filter(searchingTerm(term)).map((ciu, index) => (
               <tr key={index}>
                 <td>{index + 1}</td>
                 <td>{ciu.ciudad}</td>
@@ -67,18 +95,37 @@ const ListTable = ({ciudades, setCiudades}) => {
                   ></Button>
                 </td>
               </tr>
-            ))}
-          </tbody>
-        </Table>
-        <ModalEliminar
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5" className="text-center">
+                <Default />
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </Table>
+      <ModalInsertar
+        isOpen={modalInsertar}
+        insertar={insertar}
+        addCiudad={addCiudad}
+      />
+      <ModalEliminar
         isOpen={modalEliminar}
         eliminar={eliminar}
         ciudades={ciudades}
         setCiudades={setCiudades}
         dataEliminar={dataEliminar}
       />
-      </CardBody>
-    )
-}
+      <ModalEditar
+        isOpen={modalEditar}
+        editar={editar}
+        ciudades={ciudades}
+        setCiudades={setCiudades}
+        ciu={ciu}
+      />
+    </CardBody>
+  );
+};
 
 export default ListTable;

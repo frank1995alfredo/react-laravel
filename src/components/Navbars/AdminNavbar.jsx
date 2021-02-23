@@ -18,6 +18,7 @@
 import React from "react";
 // nodejs library that concatenates classes
 import classNames from "classnames";
+import { Grid } from 'react-spinners-css';
 
 // reactstrap components
 import {
@@ -109,10 +110,12 @@ class AdminNavbar extends React.Component {
                   <span className="navbar-toggler-bar bar3" />
                 </button>
               </div>
-              <NavbarBrand href="#pablo" onClick={e => e.preventDefault()}>
-                {this.props.brandText}
+              <NavbarBrand href="#" onClick={e => e.preventDefault()}>
+                {this.props.brandText} {" "}  <Grid color="#E9BDBD" size={20}/>
               </NavbarBrand>
+              
             </div>
+            
             <button
               aria-expanded={false}
               aria-label="Toggle navigation"

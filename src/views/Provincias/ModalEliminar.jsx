@@ -48,8 +48,9 @@ const ModalEliminar = ({
       .delete(`${url}/provincias/` + dataEliminar.id)
       .then((response) => {
         setProvincias(
-          provincias.filter((provincia) => provincia.id !== dataEliminar.id)
+          provincias.filter((provincia) => provincia.id !== dataEliminar.id),
         );
+       
         Notify("tr");
         eliminar();
       });

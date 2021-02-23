@@ -74,13 +74,13 @@ const ModalEditar = ({ isOpen, editar, provincias, setProvincias, prov }) => {
         <Card>
           <Modal isOpen={isOpen} toggle={editar}>
             <ModalHeader toggle={editar} tag="h4">
-              <strong>Actualizar Discapacidad</strong>
+              <strong>Actualizar Provincia</strong>
             </ModalHeader>
             <ModalBody>
               <Form onSubmit={peticionActualizar}>
                 <FormGroup row>
                   <Label for="descripcion" sm={3}>
-                    Discapacidad
+                    Provincia
                   </Label>
                   <Col sm={8}>
                     <Input

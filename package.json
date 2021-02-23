@@ -24,6 +24,7 @@
     "react-notification-alert": "0.0.12",
     "react-router-dom": "5.1.2",
     "react-scripts": "^4.0.2",
+    "react-spinners-css": "^1.2.2",
     "react-to-print": "^2.12.3",
     "react-tooltip": "^4.2.13",
     "reactstrap": "8.4.1"

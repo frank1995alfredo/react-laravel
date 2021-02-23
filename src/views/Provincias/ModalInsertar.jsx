@@ -16,10 +16,11 @@ import {
   } from "reactstrap";
   import axios from "axios";
   import url from "../../config";
+import { bool } from "prop-types";
 
 const ModalInsertar = ({isOpen, insertar, addProvincia }) => {
 
-    const initialFormState = {id: null, descripcion: ""};//se inicializan los inputs
+    const initialFormState = {id: null, descripcion: "", estado: bool};//se inicializan los inputs
     const [prov, setProv] = useState(initialFormState); 
 
     const handleInputChange = event => {
@@ -45,20 +46,41 @@ const ModalInsertar = ({isOpen, insertar, addProvincia }) => {
         icon: "tim-icons icon-bell-55",
         autoDismiss: 7
       };
-
       notificationAlert.current.notificationAlert(options)
-  
+    };
+
+    //notificacion en caso de que falten datos
+    const Notify2 = (place) => {
+      var options = {};
+      options = {
+        place: place,
+        message: (
+          <div>
+            <div>
+               Por favor ingrese todos los campos.
+            </div>
+          </div>
+        ),
+        type: "info",
+        icon: "tim-icons icon-bell-55",
+        autoDismiss: 7,
+      };
+      notificationAlert.current.notificationAlert(options);
     };
 
     const peticionPost = async(event) => {
         event.preventDefault();
-        if(!prov.descripcion) return
-        await axios.post(`${url}/provincias`, prov).then((response) => {
-        addProvincia(response.data.data)
-        setProv(initialFormState)
-        Notify("tr")
-        insertar()
-       });
+        try {
+          await axios.post(`${url}/provincias`, prov).then((response) => {
+            addProvincia(response.data.data)
+            setProv(initialFormState)
+            Notify("tr")
+            insertar()
+           });
+        } catch (error) {
+          Notify2("tr")
+          console.log(error);
+        }
     }
 
     return (
