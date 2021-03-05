@@ -28,6 +28,7 @@ import "assets/demo/demo.css";
 import "assets/css/nucleo-icons.css";
 import "./views/Discapacidades/discapacidades.css"
 
+
 const hist = createBrowserHistory();
 
 ReactDOM.render(

@@ -2,13 +2,17 @@ import React, { useState } from "react";
 import { CardBody, Table, Button } from "reactstrap";
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 import { Default } from 'react-spinners-css';
+import "jspdf-autotable"; //libreria para los pdfs
 import ModalEditar from "./ModalEditar";
 import ModalEliminar from "./ModalEliminar";
 import ModalInsertar from "./ModalInsertar";
-import "jspdf-autotable"; //libreria para los pdfs
-import { func } from "prop-types";
+import usePagination from "./funcionPaginacion";
 
-const ListTable = ({insertar, modalInsertar, discapacidades, setDiscapacidades, term}) => {
+
+const ListTable = ({insertar, modalInsertar, discapacidades, setDiscapacidades, term, itemsPerPage, startFrom }) => {
+  
+  const { slicedData, pagination, prevPage, nextPage, changePage } = usePagination({ itemsPerPage, discapacidades, startFrom }); 
+
   const [modalEditar, setModalEditar] = useState(false);
   const [modalEliminar, setModalEliminar] = useState(false);
 
@@ -58,9 +62,8 @@ const ListTable = ({insertar, modalInsertar, discapacidades, setDiscapacidades, 
           </tr>
         </thead>
         <tbody>
-          {
-            discapacidades.length > 0 ? (
-              discapacidades.filter(searchingTerm(term)).map((dis, index) => (
+          { discapacidades.length > 0 ? (
+              term.length > 0 ? ( discapacidades.filter(searchingTerm(term)).map((dis, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{dis.descripcion}</td>
@@ -80,50 +83,59 @@ const ListTable = ({insertar, modalInsertar, discapacidades, setDiscapacidades, 
                     ></Button>
                   </td>
                 </tr>
+              ))) : slicedData.map((pro, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{pro.descripcion}</td>
+                  <td>{pro.estado ? "Activo" : ""}</td>
+                  <td className="text-center">
+                    <Button
+                      className="tim-icons icon-refresh-01"
+                      color="success"
+                      onClick={() => seleccionarOpcion(pro, "Editar")}
+                      size="sm"
+                    ></Button>{" "}
+                    <Button
+                      className="tim-icons icon-trash-simple"
+                      color="danger"
+                      onClick={() => seleccionarOpcion(pro, "Eliminar")}
+                      size="sm"
+                    ></Button>
+                  </td>
+                </tr>
+            
               ))
-            ) :  (
+            ) : (
               <tr>
-                <td colSpan="4" className="text-center">
-                <Default />
-                </td>
-              </tr>
+              <td colSpan="4" className="text-center">
+              <Default />
+              </td>
+            </tr>
             )}
         </tbody>
       </Table>
-      <Pagination responsive aria-label="Page navigation example">
+      <Pagination  aria-label="Page navigation example">
         <PaginationItem>
           <PaginationLink className="pagination" first href="#" />
         </PaginationItem>
         <PaginationItem>
-          <PaginationLink className="pagination" previous href="#" />
+          <PaginationLink className="pagination" onClick={prevPage}  previous href="#" />
         </PaginationItem>
+         {
+            pagination.map((page) => {
+              if (!page.ellipsis) {
+                return  <PaginationItem  key={page.id}>
+                  <PaginationLink className={page.current ? 'pagination' : 'pagination'} onClick={(e) => changePage(page.id, e)} href="#">
+                  {page.id}
+                  </PaginationLink>
+                </PaginationItem>
+              } else {
+                return <li key={page.id}><span className="pagination-ellipsis">&hellip;</span></li>
+              }
+            })
+         }
         <PaginationItem>
-          <PaginationLink className="pagination" href="#">
-            1
-          </PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink className="pagination" href="#">
-            2
-          </PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink className="pagination" href="#">
-            3
-          </PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink className="pagination" href="#">
-            4
-          </PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink className="pagination" href="#">
-            5
-          </PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink className="pagination" next href="#" />
+          <PaginationLink className="pagination" onClick={nextPage} next href="#" />
         </PaginationItem>
         <PaginationItem>
           <PaginationLink className="pagination" last href="#" />

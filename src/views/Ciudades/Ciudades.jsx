@@ -24,6 +24,29 @@ const Ciudades = () => {
   const [modalInsertar, setModalInsertar] = useState(false);
   const insertar = () => setModalInsertar(!modalInsertar);
 
+
+    //reporte en pdf de la lista de discapacidades
+    const Print = () => {
+      const doc = new jsPDF();
+      let hoy = new Date();
+      let fechaActual =
+        hoy.getFullYear() + "/" + (hoy.getMonth() + 1) + "/" + hoy.getDate();
+      doc.text("Lista de Ciudades", 70, 10); //le damos las coordenadas x = 70, y = 10
+      doc.text("Fecha: " + `${fechaActual}`, 145, 10);
+      doc.autoTable({
+        head: [["#", "Ciudad", "Provincia", "Estado"]],
+        body: ciudades.map((ciu, index) => [
+          index + 1,
+          ciu.ciudad,
+          ciu.provincia,
+          ciu.estado === true ? "Activo" : "",
+        ]),
+      });
+      let fechaActual2 =
+        hoy.getFullYear() + "_" + (hoy.getMonth() + 1) + "_" + hoy.getDate();
+      doc.save("Ciudades" + `${fechaActual2}` + ".pdf");
+    };
+  
   useEffect(() => {
     async function fetchMyAPI() {
       try {
@@ -51,7 +74,7 @@ const Ciudades = () => {
                 <Button color="info" onClick={insertar} size="sm">
                   Nueva Ciudad
                 </Button>{" "}
-                <Button color="primary" onClick="" size="sm">
+                <Button color="primary" onClick={Print} size="sm">
                   PDF
                 </Button>
                 <ReactHTMLTableToExcel
@@ -74,6 +97,8 @@ const Ciudades = () => {
               </Form>
             </CardHeader>
             <ListTable
+              itemsPerPage={10}
+              startFrom={1}
               term={term}
               insertar={insertar}
               modalInsertar={modalInsertar}

@@ -36,7 +36,7 @@ const ModalInsertar = ({ isOpen, insertar, addCiudad }) => {
 
   //notificacion en caso de que se guarde
   const notificationAlert = useRef(null);
-  const Notify = (place) => {
+  const NotificacionAgg = (place) => {
     var options = {};
     options = {
       place: place,
@@ -55,17 +55,31 @@ const ModalInsertar = ({ isOpen, insertar, addCiudad }) => {
     notificationAlert.current.notificationAlert(options);
   };
 
-
   //notificacion en caso de que falten datos
-  const Notify2 = (place) => {
+  const NotificacionDatos = (place) => {
     var options = {};
     options = {
       place: place,
       message: (
         <div>
-          <div>
-             Por favor llene todos los datos.
-          </div>
+          <div>Por favor llene todos los datos.</div>
+        </div>
+      ),
+      type: "info",
+      icon: "tim-icons icon-bell-55",
+      autoDismiss: 7,
+    };
+    notificationAlert.current.notificationAlert(options);
+  };
+
+  //notificacion en caso de que ya exista un registro
+  const NotificacionExistencia = (place, message) => {
+    var options = {};
+    options = {
+      place: place,
+      message: (
+        <div>
+          <div>{message}</div>
         </div>
       ),
       type: "info",
@@ -93,14 +107,20 @@ const ModalInsertar = ({ isOpen, insertar, addCiudad }) => {
     event.preventDefault();
     try {
       await axios.post(`${url}/ciudades`, ciu).then((response) => {
-        addCiudad(response.data.data[0]); //[0] hace que pueda acceder al elemento json
-        console.log(response.data.data[0]);
-        setCiu(initialFormState);
-        Notify("tr");
-        insertar();
+        if (
+          response.data.message
+        ) {
+          NotificacionExistencia("tr", response.data.message);
+        } else {
+          addCiudad(response.data.data[0]); //[0] hace que pueda acceder al elemento json
+          console.log(response.data.data[0]);
+          setCiu(initialFormState);
+          NotificacionAgg("tr");
+          insertar();
+        }
       });
     } catch (error) {
-      Notify2("tr")
+      NotificacionDatos("tr");
       console.log(error);
     }
   };

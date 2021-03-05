@@ -31,7 +31,7 @@ const ModalInsertar = ({isOpen, insertar, addProvincia }) => {
 
    //notificacion en caso de que se guarde 
    const notificationAlert = useRef(null)
-   const Notify = (place) => {
+   const NotificacionAgg = (place) => {
       var options = {};
       options = {
         place: place,
@@ -50,14 +50,14 @@ const ModalInsertar = ({isOpen, insertar, addProvincia }) => {
     };
 
     //notificacion en caso de que falten datos
-    const Notify2 = (place) => {
+    const NotificacionDatos = (place) => {
       var options = {};
       options = {
         place: place,
         message: (
           <div>
             <div>
-               Por favor ingrese todos los campos.
+               <div>Por favor ingrese una descripcion.</div>
             </div>
           </div>
         ),
@@ -68,19 +68,42 @@ const ModalInsertar = ({isOpen, insertar, addProvincia }) => {
       notificationAlert.current.notificationAlert(options);
     };
 
+     //notificacion en caso de que ya exista un registro
+   const NotificacionExistencia = (place, message) => {
+    var options = {};
+    options = {
+      place: place,
+      message: (
+        <div>
+          <div>{message}</div>
+        </div>
+      ),
+      type: "info",
+      icon: "tim-icons icon-bell-55",
+      autoDismiss: 7,
+    };
+    notificationAlert.current.notificationAlert(options);
+  };
+
     const peticionPost = async(event) => {
         event.preventDefault();
         try {
           await axios.post(`${url}/provincias`, prov).then((response) => {
-            addProvincia(response.data.data)
-            setProv(initialFormState)
-            Notify("tr")
-            insertar()
+            if(response.data.message){
+              NotificacionExistencia("tr", response.data.message)
+            } else {
+              addProvincia(response.data.data)
+              setProv(initialFormState)
+              NotificacionAgg("tr")
+              insertar()
+            } 
            });
+           
         } catch (error) {
-          Notify2("tr")
+          NotificacionDatos("tr")
           console.log(error);
         }
+        
     }
 
     return (

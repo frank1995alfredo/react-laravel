@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { CardBody, Table, Button, Row } from "reactstrap";
-import { Default } from "react-spinners-css";
-import "jspdf-autotable"; //libreria para los pdfs
+import React, { useState } from "react";
+import { CardBody, Table, Button } from "reactstrap";
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
-import ModalEditar from "./ModalEditar";
-import ModalEliminar from "./ModalEliminar";
-import ModalInsertar from "./ModalInsertar";
+import { Default } from 'react-spinners-css';
 import usePagination from "./funcionPaginacion";
+import { useHistory } from "react-router-dom";
+import url from "../../config";
+import ModalEliminar from "./ModalEliminar"
+import Clientes from "./Clientes";
+
+
 
 const ListTable = ({
-  insertar,
-  modalInsertar,
-  provincias,
-  setProvincias,
+  clientes,
+  setClientes,
   term,
   itemsPerPage,
   startFrom,
@@ -23,44 +23,33 @@ const ListTable = ({
     prevPage,
     nextPage,
     changePage,
-  } = usePagination({ itemsPerPage, provincias, startFrom });
+  } = usePagination({ itemsPerPage, clientes, startFrom });
 
   const [modalEliminar, setModalEliminar] = useState(false);
-  const [modalEditar, setModalEditar] = useState(false);
-
   const eliminar = () => setModalEliminar(!modalEliminar);
-  const editar = () => setModalEditar(!modalEditar);
-
   const [dataEliminar, setDataEliminar] = useState([]); //le paso los datos de la api
-  const initialFormState = { id: null, descripcion: "", estado: true }; //se inicializan los inputs
-  const [prov, setProv] = useState(initialFormState);
-
-  const addProvincia = (prov) => {
-    prov.estado = true;
-    setProvincias([...provincias, prov]);
-  };
-
-  const seleccionarOpcion = (provin, caso) => {
-    if (caso === "Editar") {
-      setProv({
-        id: provin.id,
-        descripcion: provin.descripcion,
-        estado: provin.estado,
-      });
-      setModalEditar(true);
-    } else {
-      setDataEliminar(provin);
-      setModalEliminar(true);
-      console.log(dataEliminar);
-    }
-  };
 
   //funcion de busqueda
   function searchingTerm(term) {
     return function (x) {
-      return x.descripcion.toLowerCase().includes(term.toLowerCase()) || !term;
+      return x.priNombre.toLowerCase().includes(term.toLowerCase()) ||
+             x.priApellido.toLowerCase().includes(term.toLowerCase()) || 
+             x.numCedula.toLowerCase().includes(term.toLowerCase()) || 
+             !term;
     };
   }
+  const history = useHistory();
+  const handleUpdateClick = (id) => {
+    history.push(`/admin/clientes/${id}/editar`);
+  };
+
+  const seleccionarOpcion = (cliente, caso) => {
+    if (caso === "Eliminar") {
+      setDataEliminar(cliente);
+      setModalEliminar(true);
+      console.log(dataEliminar);
+    }
+  };
 
   return (
     <CardBody>
@@ -68,52 +57,58 @@ const ListTable = ({
         <thead className="text-primary">
           <tr>
             <th>#</th>
-            <th>Descripcion</th>
-            <th>Estado</th>
+            <th>Nombres</th>
+            <th>Cédula</th>
+            <th>Email</th>
+            <th>Ciudad</th>
             <th className="text-center">Opciones</th>
           </tr>
         </thead>
         <tbody>
-          {provincias.length > 0 ? (
+          {clientes.length > 0 ? (
             term.length > 0 ? (
-              provincias.filter(searchingTerm(term)).map((pro, index) => (
+              clientes.filter(searchingTerm(term)).map((cli, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
-                  <td>{pro.descripcion}</td>
-                  <td>{pro.estado ? "Activo" : ""}</td>
+                  <td>{cli.priNombre + " " + cli.priApellido}</td>
+                  <td>{cli.numCedula}</td>
+                  <td>{cli.email}</td>
+                  <td>{cli.ciudad}</td>
                   <td className="text-center">
                     <Button
                       className="tim-icons icon-refresh-01"
                       color="success"
-                      onClick={() => seleccionarOpcion(pro, "Editar")}
+                      onClick={() => handleUpdateClick(cli.id)}
                       size="sm"
                     ></Button>{" "}
                     <Button
                       className="tim-icons icon-trash-simple"
                       color="danger"
-                      onClick={() => seleccionarOpcion(pro, "Eliminar")}
+                      onClick={() => seleccionarOpcion(cli, "Eliminar")}
                       size="sm"
                     ></Button>
                   </td>
                 </tr>
               ))
             ) : (
-              slicedData.map((pro, index) => (
+              slicedData.map((cli, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
-                  <td>{pro.descripcion}</td>
-                  <td>{pro.estado ? "Activo" : ""}</td>
+                  <td>{cli.priNombre + " " + cli.priApellido}</td>
+                  <td>{cli.numCedula}</td>
+                  <td>{cli.email}</td>
+                  <td>{cli.ciudad}</td>
                   <td className="text-center">
                     <Button
                       className="tim-icons icon-refresh-01"
                       color="success"
-                      onClick={() => seleccionarOpcion(pro, "Editar")}
+                      onClick={() => handleUpdateClick(cli.id)}
                       size="sm"
                     ></Button>{" "}
                     <Button
                       className="tim-icons icon-trash-simple"
                       color="danger"
-                      onClick={() => seleccionarOpcion(pro, "Eliminar")}
+                      onClick={() => seleccionarOpcion(cli, "Eliminar")}
                       size="sm"
                     ></Button>
                   </td>
@@ -122,14 +117,13 @@ const ListTable = ({
             )
           ) : (
             <tr>
-              <td colSpan="4" className="text-center">
+              <td colSpan="6" className="text-center">
                 <Default />
               </td>
             </tr>
           )}
         </tbody>
       </Table>
-
       <Pagination aria-label="Page navigation example">
         <PaginationItem>
           <PaginationLink className="pagination" first href="#" />
@@ -175,25 +169,12 @@ const ListTable = ({
           <PaginationLink className="pagination" last href="#" />
         </PaginationItem>
       </Pagination>
-
-      <ModalInsertar
-        isOpen={modalInsertar}
-        insertar={insertar}
-        addProvincia={addProvincia}
-      />
       <ModalEliminar
         isOpen={modalEliminar}
         eliminar={eliminar}
-        provincias={provincias}
-        setProvincias={setProvincias}
+        clientes={clientes}
+        setClientes={setClientes}
         dataEliminar={dataEliminar}
-      />
-      <ModalEditar
-        isOpen={modalEditar}
-        editar={editar}
-        provincias={provincias}
-        setProvincias={setProvincias}
-        prov={prov}
       />
     </CardBody>
   );

@@ -20,8 +20,7 @@ import ListTable from "./ListTable";
 
 const Provincias = () => {
   const [provincias, setProvincias] = useState([]); //ayuda a recorrer la data en la tabla
-
-  const [term, setTerm] = useState("");
+  const [term, setTerm] = useState(""); //temino de busqueda
   const [modalInsertar, setModalInsertar] = useState(false);
   const insertar = () => setModalInsertar(!modalInsertar);
 

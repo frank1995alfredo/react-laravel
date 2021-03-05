@@ -1,6 +1,7 @@
+
+
 import React, { useRef } from "react";
 import NotificationAlert from "react-notification-alert";
-
 import {
   Button,
   Modal,
@@ -13,24 +14,25 @@ import {
 } from "reactstrap";
 import axios from "axios";
 import url from "../../config";
-
 const ModalEliminar = ({
   isOpen,
   eliminar,
-  provincias,
-  setProvincias,
+  clientes,
+  setClientes,
   dataEliminar,
 }) => {
-  //notificacion en casi de que se guarde
+  
+  //notificacion en caso de que se guarde
   const notificationAlert = useRef(null);
-  const Notify = (place, data) => {
+  const Notify = (place) => {
     var options = {};
     options = {
       place: place,
       message: (
         <div>
           <div>
-            {data}
+            Cliente <strong>{dataEliminar.priNombre + " " + dataEliminar.priApellido}</strong> eliminada
+            satisfactoriamente
           </div>
         </div>
       ),
@@ -38,18 +40,15 @@ const ModalEliminar = ({
       icon: "tim-icons icon-bell-55",
       autoDismiss: 7,
     };
-
     notificationAlert.current.notificationAlert(options);
   };
 
   const peticionDelete = async () => {
     await axios
-      .delete(`${url}/provincias/` + dataEliminar.id)
+      .delete(`${url}/clientes/` + dataEliminar.id)
       .then((response) => {
-        setProvincias(
-          provincias.filter((provincia) => provincia.id !== dataEliminar.id),
-        );
-        Notify("tr", response.data.message);
+        setClientes(clientes.filter((cliente) => cliente.id !== dataEliminar.id));
+        Notify("tr");
         eliminar();
       });
   };
@@ -63,13 +62,13 @@ const ModalEliminar = ({
         <Card>
           <Modal isOpen={isOpen} toggle={eliminar}>
             <ModalHeader toggle={eliminar} tag="h4">
-              <strong>Eliminar Provincias</strong>
+              <strong>Eliminar Clientes</strong>
             </ModalHeader>
             <ModalBody>
               <FormGroup row>
                 <Label for="descripcion" sm={10}>
                   Esta seguro que desea eliminar{" "}
-                  <strong> {dataEliminar.descripcion}</strong>
+                  <strong> {dataEliminar.priNombre + " " + dataEliminar.priApellido}</strong>
                 </Label>
               </FormGroup>
               <FormGroup>

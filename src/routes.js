@@ -26,6 +26,9 @@ import UserProfile from "views/UserProfile.js";
 import ListCiudades from "views/Ciudades/Ciudades.jsx";
 import LisDiscapacidades from "views/Discapacidades/Discapacidades.jsx";
 import LisProvincias from "views/Provincias/Provincias.jsx";
+import LisClientes from "views/Clientes/ListClientes.jsx";
+import AgregarClientes from "views/Clientes/FormAgregar.jsx"
+import EditarClientes from "views/Clientes/FormEditar.jsx"
 
 
 var routes = [
@@ -61,6 +64,27 @@ var routes = [
     component: LisProvincias,
     layout: "/admin"
   },
+  {
+    path: "/clientes",
+    name: "Clientes",
+    rtlName: "الرموز",
+    icon: "tim-icons  icon-single-02",
+    component: LisClientes,
+    layout: "/admin",
+    mod: [
+      {
+        path2: "/clientes/agregar",
+        component2: AgregarClientes,
+        layout2: "/admin",
+      },
+      {
+         path2: "/clientes/:id/editar",
+         component2: EditarClientes,
+         layout2: "/admin",
+      }
+    ]
+  },
+  
   {
     path: "/icons",
     name: "Icons",
@@ -101,6 +125,7 @@ var routes = [
     component: TableList,
     layout: "/admin"
   },
+  
   {
     path: "/typography",
     name: "Typography",

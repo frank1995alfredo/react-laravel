@@ -19,7 +19,7 @@ import ListTable from "./ListTable";
 
 const Discapacidades = () => {
   const [discapacidades, setDiscapacidades] = useState([]); //ayuda a recorrer la data en la tabla
-  const [term, setTerm] = useState(""); //estado para la busqueda
+  const [term, setTerm] = useState(""); //termino de busqueda
   const [modalInsertar, setModalInsertar] = useState(false);
   const insertar = () => setModalInsertar(!modalInsertar);
 
@@ -93,6 +93,8 @@ const Discapacidades = () => {
               </Form>
             </CardHeader>
             <ListTable
+              itemsPerPage={10}
+              startFrom={1}
               term={term}
               insertar={insertar}
               modalInsertar={modalInsertar}

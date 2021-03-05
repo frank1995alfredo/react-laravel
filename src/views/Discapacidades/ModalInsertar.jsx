@@ -28,7 +28,7 @@ const ModalInsertar = ({ isOpen, insertar, addDiscapacidad }) => {
 
   //notificacion en caso de que se guarde
   const notificationAlert = useRef(null);
-  const Notify = (place) => {
+  const NotificacionAgg = (place) => {
     var options = {};
     options = {
       place: place,
@@ -48,7 +48,7 @@ const ModalInsertar = ({ isOpen, insertar, addDiscapacidad }) => {
   };
 
   //notificacion en caso de que falten datos
-  const Notify2 = (place) => {
+  const NotificacionDatos = (place) => {
     var options = {};
     options = {
       place: place,
@@ -64,18 +64,41 @@ const ModalInsertar = ({ isOpen, insertar, addDiscapacidad }) => {
     notificationAlert.current.notificationAlert(options);
   };
 
+  //notificacion en caso de que ya exista un registro
+  const NotificacionExistencia = (place, message) => {
+    var options = {};
+    options = {
+      place: place,
+      message: (
+        <div>
+          <div>{message}</div>
+        </div>
+      ),
+      type: "info",
+      icon: "tim-icons icon-bell-55",
+      autoDismiss: 7,
+    };
+    notificationAlert.current.notificationAlert(options);
+  };
+
+  //peticion para guardar
   const peticionPost = async (event) => {
     event.preventDefault();
     try {
       await axios.post(`${url}/discapacidades`, disc).then((response) => {
-        addDiscapacidad(response.data.data);
-        setDisc(initialFormState);
-        Notify("tr");
-        insertar();
+        if (
+          response.data.message
+        ) {
+          NotificacionExistencia("tr", response.data.message);
+        } else {
+          addDiscapacidad(response.data.data);
+          setDisc(initialFormState);
+          NotificacionAgg("tr");
+          insertar();
+        }
       });
     } catch (error) {
-      Notify2("tr");
-      console.log(error);
+      NotificacionDatos("tr");
     }
   };
 

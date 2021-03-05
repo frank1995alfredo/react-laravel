@@ -28,6 +28,7 @@ import FixedPlugin from "components/FixedPlugin/FixedPlugin.jsx";
 
 import routes from "routes.js";
 
+
 import logo from "assets/img/react-logo.png";
 
 var ps;
@@ -133,6 +134,7 @@ class Admin extends React.Component {
             {...this.props}
             routes={routes}
             bgColor={this.state.backgroundColor}
+            
             rtlActive
             logo={{
               outterLink: "https://www.creative-tim.com/",

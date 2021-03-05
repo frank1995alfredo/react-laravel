@@ -23,17 +23,33 @@ import { PropTypes } from "prop-types";
 
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar";
+import { makeStyles } from "@material-ui/core/styles";
 
 // reactstrap components
 import { Nav, NavLink as ReactstrapNavLink } from "reactstrap";
-
+import Side from "./Side";
 var ps;
 
 class Sidebar extends React.Component {
   constructor(props) {
     super(props);
     this.activeRoute.bind(this);
+  
   }
+  state = {
+    sideNavLeft: false,
+  }
+
+  
+sidenavToggle = sidenavId => () => {
+  const sidenavNr = `sideNav${sidenavId}`
+  this.setState({
+    [sidenavNr]: !this.state[sidenavNr]
+  });
+};
+
+
+
   // verifies if routeName is the one active (in browser input)
   activeRoute(routeName) {
     return this.props.location.pathname.indexOf(routeName) > -1 ? "active" : "";
@@ -56,6 +72,47 @@ class Sidebar extends React.Component {
   };
   render() {
     const { bgColor, routes, rtlActive, logo } = this.props;
+
+    var color=""
+
+    if(bgColor === "primary") {
+      color = "#e14eca"
+    } 
+    if(bgColor === "blue"){
+      color = "#448aff"
+    } 
+  
+    if(bgColor === "green"){
+      color = "#4eccb7"
+    }
+
+      const useStyles = makeStyles((theme) => ({
+        
+        root: {
+          width: "100%",
+          background: color,
+        },
+        heading: {
+          fontSize: theme.typography.pxToRem(15),
+          flexBasis: "33.33%",
+          flexShrink: 0,
+          color: "#303030",
+          
+        },
+        typography: {
+          color: "#303030"
+        },
+        secondaryHeading: {
+          fontSize: theme.typography.pxToRem(15),
+          color: theme.palette.text.secondary,
+        },
+        icon2: {
+          color: "#ffffff",
+        }
+      }));
+     
+
+    console.log(bgColor)
     let logoImg = null;
     let logoText = null;
     if (logo !== undefined) {
@@ -105,6 +162,8 @@ class Sidebar extends React.Component {
         );
       }
     }
+
+
     return (
       <div className="sidebar" data={bgColor}>
         <div className="sidebar-wrapper" ref="sidebar">
@@ -134,10 +193,14 @@ class Sidebar extends React.Component {
                     <i className={prop.icon} />
                     <p>{rtlActive ? prop.rtlName : prop.name}</p>
                   </NavLink>
+                  
                 </li>
               );
             })}
+        
           </Nav>
+         
+          <Side  routes={routes} onClick={this.props.toggleSidebar} useStyles={useStyles}/>
         </div>
       </div>
     );

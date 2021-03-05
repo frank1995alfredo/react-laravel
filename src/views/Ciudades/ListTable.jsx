@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { CardBody, Table, Button } from "reactstrap";
 import { Default } from "react-spinners-css";
+import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 import ModalEliminar from "./ModalEliminar";
 import ModalInsertar from "./ModalInsertar";
 import ModalEditar from "./ModalEditar";
-
+import usePagination from "./funcionPaginacion";
 
 const ListTable = ({
   insertar,
@@ -12,7 +13,18 @@ const ListTable = ({
   ciudades,
   setCiudades,
   term,
+  itemsPerPage,
+  startFrom,
 }) => {
+
+  const {
+    slicedData,
+    pagination,
+    prevPage,
+    nextPage,
+    changePage,
+  } = usePagination({ itemsPerPage, ciudades, startFrom });
+
   const [modalEditar, setModalEditar] = useState(false);
   const [modalEliminar, setModalEliminar] = useState(false);
 
@@ -74,6 +86,7 @@ const ListTable = ({
         </thead>
         <tbody>
           {ciudades.length > 0 ? (
+            term.length > 0 ? (
             ciudades.filter(searchingTerm(term)).map((ciu, index) => (
               <tr key={index}>
                 <td>{index + 1}</td>
@@ -97,14 +110,84 @@ const ListTable = ({
               </tr>
             ))
           ) : (
-            <tr>
-              <td colSpan="5" className="text-center">
-                <Default />
-              </td>
-            </tr>
+            slicedData.map((ciu, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{ciu.ciudad}</td>
+                <td>{ciu.provincia}</td>
+                <td>{ciu.estado ? "Activo" : ""}</td>
+                <td className="text-center">
+                  <Button
+                    className="tim-icons icon-refresh-01"
+                    color="success"
+                    onClick={() => seleccionarOpcion(ciu, "Editar")}
+                    size="sm"
+                  ></Button>{" "}
+                  <Button
+                    className="tim-icons icon-trash-simple"
+                    color="danger"
+                    onClick={() => seleccionarOpcion(ciu, "Eliminar")}
+                    size="sm"
+                  ></Button>
+                </td>
+              </tr> 
+            ))
+           )
+          ) : (
+              <tr>
+                <td colSpan="5" className="text-center">
+                  <Default />
+                </td>
+              </tr>
           )}
         </tbody>
       </Table>
+      <Pagination aria-label="Page navigation example">
+        <PaginationItem>
+          <PaginationLink className="pagination" first href="#" />
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink
+            className="pagination"
+            onClick={prevPage}
+            previous
+            href="#"
+          />
+        </PaginationItem>
+        {pagination.map((page) => {
+          if (!page.ellipsis) {
+            return (
+              <PaginationItem key={page.id}>
+                <PaginationLink
+                  className={page.current ? "pagination" : "pagination"}
+                  onClick={(e) => changePage(page.id, e)}
+                  href="#"
+                >
+                  {page.id}
+                </PaginationLink>
+              </PaginationItem>
+            );
+          } else {
+            return (
+              <li key={page.id}>
+                <span className="pagination-ellipsis">&hellip;</span>
+              </li>
+            );
+          }
+        })}
+        <PaginationItem>
+          <PaginationLink
+            className="pagination"
+            onClick={nextPage}
+            next
+            href="#"
+          />
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink className="pagination" last href="#" />
+        </PaginationItem>
+      </Pagination>
+
       <ModalInsertar
         isOpen={modalInsertar}
         insertar={insertar}
